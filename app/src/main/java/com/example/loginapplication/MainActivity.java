@@ -23,7 +23,7 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private static final String API_SIGNIN = "https://9qcp5y13z2.execute-api.us-east-1.amazonaws.com/prod/user/signin";
+    private static final String API_SIGNIN = "https://ia219vugx9.execute-api.us-east-1.amazonaws.com/production/user/signin";
     private Button loginBtn;
     private EditText username,password;
 
@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 if (urlConnection.getResponseCode() == 200){
                     BufferedReader bread = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(),"utf-8"));
-                    bread.readLine();
+                    //bread.readLine();
                     String temp,responseString = "";
 
                     while ((temp = bread.readLine()) != null){
@@ -97,7 +97,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     JSONObject readObj =  new JSONObject();
                     readObj.put("Content",responseString);
-                    //Toast.makeText(, "Logged In", Toast.LENGTH_SHORT).show();
+                    System.out.println("Hi   "+ responseString);
+                    //Toast.makeText(getApplicationContext(), "Logged In", Toast.LENGTH_SHORT).show();
                 }
 
 
