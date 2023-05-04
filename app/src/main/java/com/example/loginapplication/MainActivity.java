@@ -1,13 +1,16 @@
 package com.example.loginapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,7 +27,7 @@ import java.net.URL;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String API_SIGNIN = "https://ia219vugx9.execute-api.us-east-1.amazonaws.com/production/user/signin";
-    private Button loginBtn;
+    private Button loginBtn,signUpBtn;
     private EditText username,password;
 
     @Override
@@ -35,9 +38,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         username = (EditText) findViewById(R.id.userName);
         password = (EditText) findViewById(R.id.password);
         loginBtn = (Button) findViewById(R.id.login);
+        signUpBtn = findViewById(R.id.signUp);
         loginBtn.setOnClickListener(this);
-
-
+        signUpBtn.setOnClickListener(this);
 
     }
 
@@ -53,6 +56,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 paramenters[2] = API_SIGNIN;
                 WebService temp = new WebService();
                 temp.execute(paramenters);
+                break;
+            case R.id.signUp:
+                Intent intent = new Intent(this, Registration.class);
+                startActivity(intent);
                 break;
         }
 
@@ -95,9 +102,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     while ((temp = bread.readLine()) != null){
                         responseString+= temp;
                     }
-                    JSONObject readObj =  new JSONObject();
-                    readObj.put("Content",responseString);
-                    System.out.println("Hi   "+ responseString);
+                    //JSONObject json = new JSONObject(new JSONTokener(responseString));
+                    JSONObject jsonobj = new JSONObject(responseString);
+//                    JSONObject readObj =  new JSONObject();
+//                    readObj.put("Content",responseString);
+//                    System.out.println("Hi   "+ responseString);
+                    JSONObject jsonbd = new JSONObject(jsonobj.getString("body"));
+                    if(jsonbd.getString("message").equals("Success")){
+                        System.out.println("Hi   Success");
+                    }else{
+                        System.out.println("Hi   Failure");
+                    }
+
+
+                    System.out.println(jsonobj);
                     //Toast.makeText(getApplicationContext(), "Logged In", Toast.LENGTH_SHORT).show();
                 }
 

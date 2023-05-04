@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+
     <Button
         android:id="@+id/login"
         android:layout_width="371dp"
@@ -18,17 +19,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.57" />
 
-    <fragment
-        android:name="com.example.loginapplication.Verification"
-        android:id="@+id/fooFragment"
-        android:layout_width="wrap_content"
-        tools:layout="@layout/fragment_verification"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/passwordForgot"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        />
+
 
     <Button
         android:id="@+id/signUp"
@@ -96,6 +87,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.178" />
+
+
+<!--    <fragment-->
+<!--        android:id="@+id/fooFragment"-->
+<!--        android:name="com.example.loginapplication.Verification"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.491"-->
+<!--        android:visibility="gone"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/hidden_elements_container"-->
+<!--        app:layout_constraintVertical_bias="0.652"-->
+<!--        tools:layout="@layout/fragment_verification" />-->
 
 
 
