@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,8 +21,10 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -73,62 +76,86 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            JSONObject jsonobj = null;
+            try {
+                jsonobj = new JSONObject(result);
+//                    JSONObject readObj =  new JSONObject();
+//                    readObj.put("Content",responseString);
+//                    System.out.println("Hi   "+ responseString);
+                JSONObject jsonbd = new JSONObject(jsonobj.getString("body"));
+                String toastMsg = "Login Successful";
+                if (jsonbd.getString("message").equals("Success")) {
+                    System.out.println("Hi   Success");
+                } else {
+                    String errorData = jsonbd.getString("data");
+                    if (errorData.contains("UserNotFoundException")) {
+                        toastMsg = "Incorrect username or password";
+                    } else if (errorData.contains("UserNotConfirmedException")) {
+                        toastMsg = "User is not confirmed.";
+                    } else
+                        toastMsg = "Internal Error";
+                }
+                Toast.makeText(getApplicationContext(), toastMsg, Toast.LENGTH_SHORT).show();
+                System.out.println("Hi   Failure");
+            } catch (JSONException ex) {
+                throw new RuntimeException(ex);
+            }
+
+
+            //System.out.println(jsonobj);
+
+        }
+
+        @Override
         protected String doInBackground(String... inputs) {
-           //String apiUrl = "https://9qcp5y13z2.execute-api.us-east-1.amazonaws.com/prod/user/signin";
+            //String apiUrl = "https://9qcp5y13z2.execute-api.us-east-1.amazonaws.com/prod/user/signin";
             JSONObject json = new JSONObject();
             try {
                 String username = inputs[0];
                 String password = inputs[1];
                 String apiUrl = inputs[2];
 
-                json.put("username",username);
-                json.put("password",password);
+                json.put("username", username);
+                json.put("password", password);
                 String jsonstring = json.toString();
                 URL url = new URL(apiUrl);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.getDoOutput();
                 urlConnection.setRequestMethod("POST");
-                urlConnection.setRequestProperty("Content-Type","application/json");
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(urlConnection.getOutputStream(),"utf-8"));
+                urlConnection.setRequestProperty("Content-Type", "application/json");
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(urlConnection.getOutputStream(), "utf-8"));
                 writer.write(jsonstring);
                 writer.flush();
                 writer.close();
 
-                if (urlConnection.getResponseCode() == 200){
-                    BufferedReader bread = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(),"utf-8"));
+                if (urlConnection.getResponseCode() == 200) {
+                    BufferedReader bread = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "utf-8"));
                     //bread.readLine();
-                    String temp,responseString = "";
+                    String temp, responseString = "";
 
-                    while ((temp = bread.readLine()) != null){
-                        responseString+= temp;
+                    while ((temp = bread.readLine()) != null) {
+                        responseString += temp;
                     }
+                    return responseString;
                     //JSONObject json = new JSONObject(new JSONTokener(responseString));
-                    JSONObject jsonobj = new JSONObject(responseString);
-//                    JSONObject readObj =  new JSONObject();
-//                    readObj.put("Content",responseString);
-//                    System.out.println("Hi   "+ responseString);
-                    JSONObject jsonbd = new JSONObject(jsonobj.getString("body"));
-                    if(jsonbd.getString("message").equals("Success")){
-                        System.out.println("Hi   Success");
-                    }else{
-                        System.out.println("Hi   Failure");
-                    }
 
-
-                    System.out.println(jsonobj);
-                    //Toast.makeText(getApplicationContext(), "Logged In", Toast.LENGTH_SHORT).show();
                 }
 
 
-            } catch (JSONException e) {
+                return null;
+            } catch (ProtocolException e) {
                 throw new RuntimeException(e);
             } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException(e);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-
-            return null;
         }
     }
 }
