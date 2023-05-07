@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,6 +33,7 @@ public class Registration extends AppCompatActivity implements View.OnClickListe
 
     private Button registerBtn,signInBtn;
     private EditText username,password,email;
+    AlertDialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,7 +82,7 @@ public class Registration extends AppCompatActivity implements View.OnClickListe
         // Create a dialog to show the overlay view
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(overlayView);
-        AlertDialog dialog = builder.create();
+        dialog = builder.create();
 
         // Set an OnClickListener on the submit button to handle text submission
         submitButton.setOnClickListener(new View.OnClickListener() {
@@ -90,11 +92,11 @@ public class Registration extends AppCompatActivity implements View.OnClickListe
                 String[] paramenters = new String[3];
                 paramenters[0] = username.getText().toString();
                 paramenters[1] = textInput;
-                paramenters[3] = API_Verify;
+                paramenters[2] = API_Verify;
                 Registration.WebServiceNew temp = new Registration.WebServiceNew();
                 temp.execute(paramenters);
 
-                dialog.dismiss();
+                //dialog.dismiss();
             }
         });
 
@@ -120,12 +122,23 @@ public class Registration extends AppCompatActivity implements View.OnClickListe
             JSONObject jsonobj = null;
             try {
                 jsonobj = new JSONObject(result);
+                String toastMsg = "Check Email for confirmation COde";
                 if(jsonobj.getString("message").equals("Success")){
                     System.out.println("Hi   Success");
+                    Toast.makeText(Registration.this, toastMsg, Toast.LENGTH_SHORT).show();
                     openOverlay();
                     //findViewById(R.id.hidden_layout).setVisibility(View.VISIBLE);
 
                 }else{
+                    String errorData = jsonobj.getString("data");
+                    if (errorData.contains("UsernameExistsException")) {
+                        toastMsg = "User already exists";
+                    } else if (errorData.contains("InvalidPasswordException")) {
+                        toastMsg = "invalid password";
+                    } else {
+                        toastMsg = "Internal Error";
+                    }
+                    Toast.makeText(Registration.this, toastMsg, Toast.LENGTH_SHORT).show();
                     System.out.println("Please Try again");
                     //openOverlay();
                 }
@@ -196,14 +209,26 @@ public class Registration extends AppCompatActivity implements View.OnClickListe
             JSONObject jsonobj = null;
             try {
                 jsonobj = new JSONObject(result);
+                String toastMsg = "Registered Successful. Login Now";
+
                 if(jsonobj.getString("message").equals("Success")){
                     System.out.println("Confim   Success");
                     //openOverlay();
                     //findViewById(R.id.hidden_layout).setVisibility(View.VISIBLE);
+                    Toast.makeText(Registration.this, toastMsg, Toast.LENGTH_SHORT).show();
                     shouLoginPage();
                 }else{
-                    System.out.println("Please Try again");
-                    //openOverlay();
+                    String errorData = jsonobj.getString("data");
+                    if (errorData.contains("UserNotFoundException")) {
+                        toastMsg = "user name not found";
+                    } else if (errorData.contains("CodeMismatchException")) {
+                        toastMsg = "Code doesn't match.";
+                    } else if (errorData.contains("ExpiredCodeException")) {
+                        toastMsg = "Code has expired.";
+                    } else {
+                        toastMsg = "Internal Error";
+                    }
+                    Toast.makeText(Registration.this, toastMsg, Toast.LENGTH_SHORT).show();
                 }
             } catch (JSONException e) {
                 throw new RuntimeException(e);

@@ -94,8 +94,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         toastMsg = "Incorrect username or password";
                     } else if (errorData.contains("UserNotConfirmedException")) {
                         toastMsg = "User is not confirmed.";
-                    } else
+                    } else if (errorData.contains("NotAuthorizedException")) {
+                        toastMsg = "Incorrect username or password.";
+                    } else {
                         toastMsg = "Internal Error";
+                    }
                 }
                 Toast.makeText(getApplicationContext(), toastMsg, Toast.LENGTH_SHORT).show();
                 System.out.println("Hi   Failure");
