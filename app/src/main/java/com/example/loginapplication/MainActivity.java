@@ -2,9 +2,6 @@ package com.example.loginapplication;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -31,7 +28,7 @@ import java.net.URL;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String API_SIGNIN = "https://ia219vugx9.execute-api.us-east-1.amazonaws.com/production/user/signin";
-    private static final String API_PASSWORD_RST = "https://ia219vugx9.execute-api.us-east-1.amazonaws.com/production/user/signin";
+    private static final String API_PASSWORD_RST = "https://ia219vugx9.execute-api.us-east-1.amazonaws.com/production/user/forgotpassword";
     private Button loginBtn,signUpBtn,passwordForgot;
     private EditText username,password;
 
@@ -47,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         signUpBtn = findViewById(R.id.signUp);
         loginBtn.setOnClickListener(this);
         signUpBtn.setOnClickListener(this);
+        passwordForgot.setOnClickListener(this);
 
     }
 
@@ -78,8 +76,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         View overlayView = getLayoutInflater().inflate(R.layout.forgot_password, null);
 
         // Find the EditText and Button views in the overlay layout
-        EditText emailId = overlayView.findViewById(R.id.emailId);
-        Button resetBtn = overlayView.findViewById(R.id.reset_email);
+        EditText user_name = overlayView.findViewById(R.id.user_name);
+        Button resetBtn = overlayView.findViewById(R.id.reset_password);
 
         // Create a dialog to show the overlay view
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -92,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(View v) {
                 //String textInput = emailId.getText().toString();
                 String[] paramenters = new String[2];
-                paramenters[0] = emailId.getText().toString();
+                paramenters[0] = user_name.getText().toString();
                 paramenters[1] = API_PASSWORD_RST;
                 MainActivity.WebServiceNew temp = new MainActivity.WebServiceNew();
                 temp.execute(paramenters);
@@ -118,9 +116,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             JSONObject jsonobj = null;
             try {
                 jsonobj = new JSONObject(result);
-//                    JSONObject readObj =  new JSONObject();
-//                    readObj.put("Content",responseString);
-//                    System.out.println("Hi   "+ responseString);
                 JSONObject jsonbd = new JSONObject(jsonobj.getString("body"));
                 String toastMsg = "Login Successful";
                 if (jsonbd.getString("message").equals("Success")) {
@@ -212,21 +207,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             JSONObject jsonobj = null;
+
             try {
                 jsonobj = new JSONObject(result);
-//                    JSONObject readObj =  new JSONObject();
-//                    readObj.put("Content",responseString);
-//                    System.out.println("Hi   "+ responseString);
+
                 JSONObject jsonbd = new JSONObject(jsonobj.getString("body"));
-                String toastMsg = "Login Successful";
+                String toastMsg = "type code from email id";
                 if (jsonbd.getString("message").equals("Success")) {
                     System.out.println("Hi   Success");
+                    String emailID = (new JSONObject(jsonbd.getString("data"))).getString("Destination");
+                    Toast.makeText(MainActivity.this, toastMsg + emailID, Toast.LENGTH_SHORT).show();
+
                 } else {
                     String errorData = jsonbd.getString("data");
                     if (errorData.contains("UserNotFoundException")) {
                         toastMsg = "Incorrect username or password";
-                    } else if (errorData.contains("UserNotConfirmedException")) {
-                        toastMsg = "User is not confirmed.";
+                    } else if (errorData.contains("CodeDeliveryFailureException")) {
+                        toastMsg = "Code Delivery Failed";
                     } else if (errorData.contains("NotAuthorizedException")) {
                         toastMsg = "Incorrect username or password.";
                     } else {
@@ -239,7 +236,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 throw new RuntimeException(ex);
             }
 
-
             //System.out.println(jsonobj);
 
         }
@@ -250,11 +246,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             JSONObject json = new JSONObject();
             try {
                 String username = inputs[0];
-                String password = inputs[1];
-                String apiUrl = inputs[2];
+                String apiUrl = inputs[1];
 
                 json.put("username", username);
-                json.put("password", password);
+
                 String jsonstring = json.toString();
                 URL url = new URL(apiUrl);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
