@@ -1,5 +1,6 @@
 package com.example.loginapplication;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -30,7 +31,8 @@ import java.net.URL;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String API_SIGNIN = "https://ia219vugx9.execute-api.us-east-1.amazonaws.com/production/user/signin";
-    private Button loginBtn,signUpBtn;
+    private static final String API_PASSWORD_RST = "https://ia219vugx9.execute-api.us-east-1.amazonaws.com/production/user/signin";
+    private Button loginBtn,signUpBtn,passwordForgot;
     private EditText username,password;
 
     @Override
@@ -41,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         username = (EditText) findViewById(R.id.userName);
         password = (EditText) findViewById(R.id.password);
         loginBtn = (Button) findViewById(R.id.login);
+        passwordForgot = findViewById(R.id.passwordForgot);
         signUpBtn = findViewById(R.id.signUp);
         loginBtn.setOnClickListener(this);
         signUpBtn.setOnClickListener(this);
@@ -64,11 +67,141 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent intent = new Intent(this, Registration.class);
                 startActivity(intent);
                 break;
+            case R.id.passwordForgot:
+                passwordResetOverlay();
+                break;
         }
 
     }
 
+    private void passwordResetOverlay() {
+        View overlayView = getLayoutInflater().inflate(R.layout.forgot_password, null);
+
+        // Find the EditText and Button views in the overlay layout
+        EditText emailId = overlayView.findViewById(R.id.emailId);
+        Button resetBtn = overlayView.findViewById(R.id.reset_email);
+
+        // Create a dialog to show the overlay view
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(overlayView);
+        AlertDialog dialog = builder.create();
+
+        // Set an OnClickListener on the submit button to handle text submission
+        resetBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //String textInput = emailId.getText().toString();
+                String[] paramenters = new String[2];
+                paramenters[0] = emailId.getText().toString();
+                paramenters[1] = API_PASSWORD_RST;
+                MainActivity.WebServiceNew temp = new MainActivity.WebServiceNew();
+                temp.execute(paramenters);
+
+                //dialog.dismiss();
+            }
+        });
+
+        // Show the dialog
+        dialog.show();
+    }
+
     private class WebService extends AsyncTask<String,Void,String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            JSONObject jsonobj = null;
+            try {
+                jsonobj = new JSONObject(result);
+//                    JSONObject readObj =  new JSONObject();
+//                    readObj.put("Content",responseString);
+//                    System.out.println("Hi   "+ responseString);
+                JSONObject jsonbd = new JSONObject(jsonobj.getString("body"));
+                String toastMsg = "Login Successful";
+                if (jsonbd.getString("message").equals("Success")) {
+                    System.out.println("Hi   Success");
+                } else {
+                    String errorData = jsonbd.getString("data");
+                    if (errorData.contains("UserNotFoundException")) {
+                        toastMsg = "Incorrect username or password";
+                    } else if (errorData.contains("UserNotConfirmedException")) {
+                        toastMsg = "User is not confirmed.";
+                    } else if (errorData.contains("NotAuthorizedException")) {
+                        toastMsg = "Incorrect username or password.";
+                    } else {
+                        toastMsg = "Internal Error";
+                    }
+                }
+                Toast.makeText(getApplicationContext(), toastMsg, Toast.LENGTH_SHORT).show();
+                System.out.println("Hi   Failure");
+            } catch (JSONException ex) {
+                throw new RuntimeException(ex);
+            }
+
+
+            //System.out.println(jsonobj);
+
+        }
+
+        @Override
+        protected String doInBackground(String... inputs) {
+            //String apiUrl = "https://9qcp5y13z2.execute-api.us-east-1.amazonaws.com/prod/user/signin";
+            JSONObject json = new JSONObject();
+            try {
+                String username = inputs[0];
+                String password = inputs[1];
+                String apiUrl = inputs[2];
+
+                json.put("username", username);
+                json.put("password", password);
+                String jsonstring = json.toString();
+                URL url = new URL(apiUrl);
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.getDoOutput();
+                urlConnection.setRequestMethod("POST");
+                urlConnection.setRequestProperty("Content-Type", "application/json");
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(urlConnection.getOutputStream(), "utf-8"));
+                writer.write(jsonstring);
+                writer.flush();
+                writer.close();
+
+                if (urlConnection.getResponseCode() == 200) {
+                    BufferedReader bread = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "utf-8"));
+                    //bread.readLine();
+                    String temp, responseString = "";
+
+                    while ((temp = bread.readLine()) != null) {
+                        responseString += temp;
+                    }
+                    return responseString;
+                    //JSONObject json = new JSONObject(new JSONTokener(responseString));
+
+                }
+
+
+                return null;
+            } catch (ProtocolException e) {
+                throw new RuntimeException(e);
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+
+
+    private class WebServiceNew extends AsyncTask<String,Void,String> {
 
         @Override
         protected void onPreExecute() {
