@@ -2,8 +2,10 @@ package com.example.loginapplication;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -36,6 +38,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+
+
 
         username = (EditText) findViewById(R.id.userName);
         password = (EditText) findViewById(R.id.password);
@@ -125,6 +130,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 String toastMsg = "Login Successful";
                 if (jsonbd.getString("message").equals("Success")) {
                     System.out.println("Hi   Success");
+                    Toast.makeText(getApplicationContext(), toastMsg, Toast.LENGTH_SHORT).show();
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://umbc.edu/"));
+                    startActivity(browserIntent);
                 } else {
                     String errorData = jsonbd.getString("data");
                     if (errorData.contains("UserNotFoundException")) {
@@ -136,9 +144,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     } else {
                         toastMsg = "Internal Error";
                     }
+                    Toast.makeText(getApplicationContext(), toastMsg, Toast.LENGTH_SHORT).show();
                 }
-                Toast.makeText(getApplicationContext(), toastMsg, Toast.LENGTH_SHORT).show();
-                System.out.println("Hi   Failure");
+
             } catch (JSONException ex) {
                 throw new RuntimeException(ex);
             }

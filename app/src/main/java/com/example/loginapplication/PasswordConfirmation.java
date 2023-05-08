@@ -1,6 +1,7 @@
 package com.example.loginapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -32,6 +33,7 @@ public class PasswordConfirmation extends AppCompatActivity implements View.OnCl
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_password_confirmation);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
         code = findViewById(R.id.userCode);
         newpassword = findViewById(R.id.newpassword);

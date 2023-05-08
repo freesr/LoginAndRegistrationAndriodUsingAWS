@@ -80,24 +80,12 @@
         app:layout_constraintVertical_bias="0.458" />
 
 
-<!--    <fragment-->
-<!--        android:id="@+id/fooFragment"-->
-<!--        android:name="com.example.loginapplication.Verification"-->
-<!--        android:layout_width="371dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintHorizontal_bias="0.52"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/register"-->
-<!--        app:layout_constraintVertical_bias="0.191"-->
-<!--        tools:layout="@layout/fragment_verification" />-->
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="146dp"
         android:layout_height="35dp"
-        android:text="Super App"
+        android:text="My UMBC"
         android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -106,61 +94,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.119" />
 
-<!--    <Button-->
-<!--        android:id="@+id/verifyCode"-->
-
-
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="41dp"-->
-<!--        android:text="Verify"-->
-<!--        android:visibility="visible"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintHorizontal_bias="0.913"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintVertical_bias="0.721" />-->
-
-<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:id="@+id/hidden_layout"-->
-<!--        >-->
-
-
-
-
-<!--    <Button-->
-<!--        android:id="@+id/resendCode"-->
-
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-
-<!--        android:text="Resend Code"-->
-<!--        android:visibility="visible"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintHorizontal_bias="0.454"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintVertical_bias="0.824" />-->
-
-<!--    <EditText-->
-<!--        android:id="@+id/code"-->
-
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-
-<!--        android:ems="10"-->
-<!--        android:hint="Code"-->
-<!--        android:inputType="textEmailAddress"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintHorizontal_bias="0.218"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintVertical_bias="0.712" />-->
-<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
