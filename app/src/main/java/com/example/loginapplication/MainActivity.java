@@ -72,6 +72,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    private void showNextPage(){
+        Intent intent = new Intent(this, PasswordConfirmation.class);
+        startActivity(intent);
+    }
+
     private void passwordResetOverlay() {
         View overlayView = getLayoutInflater().inflate(R.layout.forgot_password, null);
 
@@ -217,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     System.out.println("Hi   Success");
                     String emailID = (new JSONObject(jsonbd.getString("data"))).getString("Destination");
                     Toast.makeText(MainActivity.this, toastMsg + emailID, Toast.LENGTH_SHORT).show();
-
+                    showNextPage();
                 } else {
                     String errorData = jsonbd.getString("data");
                     if (errorData.contains("UserNotFoundException")) {

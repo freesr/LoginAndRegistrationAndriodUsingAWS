@@ -14,7 +14,7 @@
         android:theme="@style/Theme.LoginApplication"
         tools:targetApi="31">
         <activity
-            android:name=".password_confirmation"
+            android:name=".PasswordConfirmation"
             android:exported="false" />
         <activity
             android:name=".Registration"
