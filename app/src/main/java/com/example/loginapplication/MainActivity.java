@@ -59,6 +59,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.login:
                 String username1 = username.getText().toString();
                 String password1 = password.getText().toString();
+                if(username1.equals("") ||  password1.equals("")){
+                    Toast.makeText(this, "UserName or password is empty", Toast.LENGTH_SHORT).show();
+                    break;
+                }
                 String[] paramenters = new String[3];
                 paramenters[0] = username1;
                 paramenters[1] = password1;
@@ -82,6 +86,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         startActivity(intent);
     }
 
+    private void toastMsg(){
+        Toast.makeText(this, "UserName is empty", Toast.LENGTH_SHORT).show();
+    }
+
     private void passwordResetOverlay() {
         View overlayView = getLayoutInflater().inflate(R.layout.forgot_password, null);
 
@@ -101,11 +109,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //String textInput = emailId.getText().toString();
                 String[] paramenters = new String[2];
                 paramenters[0] = user_name.getText().toString();
-                paramenters[1] = API_PASSWORD_RST;
-                MainActivity.WebServiceNew temp = new MainActivity.WebServiceNew();
-                temp.execute(paramenters);
-
-                //dialog.dismiss();
+                if(paramenters[0].equals("")){
+                    toastMsg();
+                }else{
+                    paramenters[1] = API_PASSWORD_RST;
+                    MainActivity.WebServiceNew temp = new MainActivity.WebServiceNew();
+                    temp.execute(paramenters);
+                }
             }
         });
 
@@ -129,82 +139,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 JSONObject jsonbd = new JSONObject(jsonobj.getString("body"));
                 String toastMsg = "Login Successful";
                 if (jsonbd.getString("message").equals("Success")) {
-                    System.out.println("Hi   Success");
                     Toast.makeText(getApplicationContext(), toastMsg, Toast.LENGTH_SHORT).show();
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://umbc.edu/"));
                     startActivity(browserIntent);
                 } else {
-                    String errorData = jsonbd.getString("data");
-                    if (errorData.contains("UserNotFoundException")) {
-                        toastMsg = "Incorrect username or password";
-                    } else if (errorData.contains("UserNotConfirmedException")) {
-                        toastMsg = "User is not confirmed.";
-                    } else if (errorData.contains("NotAuthorizedException")) {
-                        toastMsg = "Incorrect username or password.";
-                    } else {
-                        toastMsg = "Internal Error";
-                    }
+                    toastMsg = ApiConnection.sendToastError(jsonbd.getString("data"));
                     Toast.makeText(getApplicationContext(), toastMsg, Toast.LENGTH_SHORT).show();
                 }
 
             } catch (JSONException ex) {
                 throw new RuntimeException(ex);
             }
-
-
-            //System.out.println(jsonobj);
-
         }
 
         @Override
         protected String doInBackground(String... inputs) {
             //String apiUrl = "https://9qcp5y13z2.execute-api.us-east-1.amazonaws.com/prod/user/signin";
             JSONObject json = new JSONObject();
-            try {
-                String username = inputs[0];
-                String password = inputs[1];
-                String apiUrl = inputs[2];
+            String username = inputs[0];
+            String password = inputs[1];
+            String apiUrl = inputs[2];
 
+            try {
                 json.put("username", username);
                 json.put("password", password);
                 String jsonstring = json.toString();
-                URL url = new URL(apiUrl);
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.getDoOutput();
-                urlConnection.setRequestMethod("POST");
-                urlConnection.setRequestProperty("Content-Type", "application/json");
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(urlConnection.getOutputStream(), "utf-8"));
-                writer.write(jsonstring);
-                writer.flush();
-                writer.close();
-
-                if (urlConnection.getResponseCode() == 200) {
-                    BufferedReader bread = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "utf-8"));
-                    //bread.readLine();
-                    String temp, responseString = "";
-
-                    while ((temp = bread.readLine()) != null) {
-                        responseString += temp;
-                    }
-                    return responseString;
-                    //JSONObject json = new JSONObject(new JSONTokener(responseString));
-
-                }
-
-
-                return null;
-            } catch (ProtocolException e) {
-                throw new RuntimeException(e);
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
+                return ApiConnection.sendRequest(jsonstring, apiUrl);
             } catch (JSONException e) {
-                throw new RuntimeException(e);
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
+
     }
 
 
@@ -227,77 +192,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 JSONObject jsonbd = new JSONObject(jsonobj.getString("body"));
                 String toastMsg = "type code from email id";
                 if (jsonbd.getString("message").equals("Success")) {
-                    System.out.println("Hi   Success");
                     String emailID = (new JSONObject(jsonbd.getString("data"))).getString("Destination");
                     Toast.makeText(MainActivity.this, toastMsg + emailID, Toast.LENGTH_SHORT).show();
                     showNextPage();
                 } else {
-                    String errorData = jsonbd.getString("data");
-                    if (errorData.contains("UserNotFoundException")) {
-                        toastMsg = "Incorrect username or password";
-                    } else if (errorData.contains("CodeDeliveryFailureException")) {
-                        toastMsg = "Code Delivery Failed";
-                    } else if (errorData.contains("NotAuthorizedException")) {
-                        toastMsg = "Incorrect username or password.";
-                    } else {
-                        toastMsg = "Internal Error";
-                    }
+                    toastMsg = ApiConnection.sendToastError(jsonbd.getString("data"));
+                    Toast.makeText(getApplicationContext(), toastMsg, Toast.LENGTH_SHORT).show();
                 }
-                Toast.makeText(getApplicationContext(), toastMsg, Toast.LENGTH_SHORT).show();
-                System.out.println("Hi   Failure");
             } catch (JSONException ex) {
                 throw new RuntimeException(ex);
             }
-
-            //System.out.println(jsonobj);
-
         }
 
         @Override
         protected String doInBackground(String... inputs) {
-            //String apiUrl = "https://9qcp5y13z2.execute-api.us-east-1.amazonaws.com/prod/user/signin";
             JSONObject json = new JSONObject();
             try {
                 String username = inputs[0];
                 String apiUrl = inputs[1];
-
                 json.put("username", username);
-
                 String jsonstring = json.toString();
-                URL url = new URL(apiUrl);
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.getDoOutput();
-                urlConnection.setRequestMethod("POST");
-                urlConnection.setRequestProperty("Content-Type", "application/json");
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(urlConnection.getOutputStream(), "utf-8"));
-                writer.write(jsonstring);
-                writer.flush();
-                writer.close();
-
-                if (urlConnection.getResponseCode() == 200) {
-                    BufferedReader bread = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "utf-8"));
-                    //bread.readLine();
-                    String temp, responseString = "";
-
-                    while ((temp = bread.readLine()) != null) {
-                        responseString += temp;
-                    }
-                    return responseString;
-                    //JSONObject json = new JSONObject(new JSONTokener(responseString));
-
-                }
-
-
-                return null;
-            } catch (ProtocolException e) {
-                throw new RuntimeException(e);
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
+                return ApiConnection.sendRequest(jsonstring, apiUrl);
+            } catch (Exception e){
                 throw new RuntimeException(e);
             }
         }

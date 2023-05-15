@@ -50,6 +50,10 @@ public class PasswordConfirmation extends AppCompatActivity implements View.OnCl
                 String username1 = username.getText().toString();
                 String password1 = newpassword.getText().toString();
                 String email_code = code.getText().toString();
+                if(username1.equals("") ||  password1.equals("") ||  email_code.equals("")){
+                    Toast.makeText(this, "UserName or password or Code is empty", Toast.LENGTH_SHORT).show();
+                    break;
+                }
                 String[] paramenters = new String[4];
                 paramenters[0] = username1;
                 paramenters[1] = password1;
@@ -58,8 +62,6 @@ public class PasswordConfirmation extends AppCompatActivity implements View.OnCl
                 PasswordConfirmation.WebService temp = new PasswordConfirmation.WebService();
                 temp.execute(paramenters);
                 break;
-
-
         }
     }
 
@@ -81,31 +83,16 @@ public class PasswordConfirmation extends AppCompatActivity implements View.OnCl
             JSONObject jsonobj = null;
             try {
                 jsonobj = new JSONObject(result);
+                JSONObject jsonbd = new JSONObject(jsonobj.getString("body"));
                 String toastMsg = "Password Reset Succesful";
                 if(jsonobj.getString("message").equals("Success")){
                     System.out.println("Hi   Success");
                     Toast.makeText(PasswordConfirmation.this, toastMsg, Toast.LENGTH_SHORT).show();
                     shouLoginPage();
-                    //findViewById(R.id.hidden_layout).setVisibility(View.VISIBLE);
-
                 }else{
-                    String errorData = jsonobj.getString("data");
-                    if (errorData.contains("UserNotFoundException")) {
-                        toastMsg = "User not found";
-                    } else if (errorData.contains("UserNotConfirmedException")) {
-                        toastMsg = "User Not Confirmed";
-                    } else if (errorData.contains("InvalidPasswordException")) {
-                        toastMsg = "invalid password";
-                    } else if (errorData.contains("ExpiredCodeException")) {
-                        toastMsg = "code has expired";
-                    } else if (errorData.contains("CodeMismatchException")) {
-                        toastMsg = "code doesn't match";
-                    } else {
-                        toastMsg = "Internal Error";
-                    }
-                    Toast.makeText(PasswordConfirmation.this, toastMsg, Toast.LENGTH_SHORT).show();
-                    System.out.println("Please Try again");
-                    //openOverlay();
+                    toastMsg = ApiConnection.sendToastError(jsonbd.getString("data"));
+                    Toast.makeText(getApplicationContext(), toastMsg, Toast.LENGTH_SHORT).show();
+
                 }
             } catch (JSONException e) {
                 throw new RuntimeException(e);
@@ -126,38 +113,10 @@ public class PasswordConfirmation extends AppCompatActivity implements View.OnCl
                 json.put("password",password);
                 json.put("code",email_code);
                 String jsonstring = json.toString();
-                URL url = new URL(apiUrl);
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.getDoOutput();
-                urlConnection.setRequestMethod("POST");
-                urlConnection.setRequestProperty("Content-Type","application/json");
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(urlConnection.getOutputStream(),"utf-8"));
-                writer.write(jsonstring);
-                writer.flush();
-                writer.close();
-
-                if (urlConnection.getResponseCode() == 200){
-                    BufferedReader bread = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(),"utf-8"));
-                    //bread.readLine();
-                    String temp,responseString = "";
-
-                    while ((temp = bread.readLine()) != null){
-                        responseString+= temp;
-                    }
-                    return responseString;
-
-                }
-
-
+                return ApiConnection.sendRequest(jsonstring, apiUrl);
             } catch (JSONException e) {
                 throw new RuntimeException(e);
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             }
-
-            return null;
         }
     }
 }

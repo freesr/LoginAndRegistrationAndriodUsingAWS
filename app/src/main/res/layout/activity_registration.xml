@@ -40,8 +40,7 @@
         android:layout_height="53dp"
         android:ems="10"
         android:hint="User Name"
-        android:text="Qwerty@t"
-        android:inputType="textPersonName"
+        android:inputType="text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.52"
@@ -55,8 +54,7 @@
         android:layout_height="53dp"
         android:ems="10"
         android:hint="Password"
-        android:inputType="textPersonName"
-        android:text="Qwerty@123"
+        android:inputType="textPassword"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.52"
@@ -71,7 +69,6 @@
         android:ems="10"
         android:hint="Email Id"
         android:inputType="textEmailAddress"
-        android:text="evikas10020+t@gmail.com"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.52"
@@ -81,12 +78,11 @@
 
 
 
-    <TextView
+    <ImageView
         android:id="@+id/textView"
-        android:layout_width="146dp"
-        android:layout_height="35dp"
-        android:text="My UMBC"
-        android:textSize="30sp"
+        android:layout_width="1024px"
+        android:src="@drawable/download"
+        android:layout_height="236px"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.509"

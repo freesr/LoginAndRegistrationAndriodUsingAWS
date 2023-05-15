@@ -57,6 +57,10 @@ public class Registration extends AppCompatActivity implements View.OnClickListe
                 String username1 = username.getText().toString();
                 String password1 = password.getText().toString();
                 String email1 = email.getText().toString();
+                if(username1.equals("") ||  password1.equals("") ||  email1.equals("")){
+                    Toast.makeText(this, "UserName or password or Email is empty", Toast.LENGTH_SHORT).show();
+                    break;
+                }
                 String[] paramenters = new String[4];
                 paramenters[0] = username1;
                 paramenters[1] = password1;
@@ -65,12 +69,15 @@ public class Registration extends AppCompatActivity implements View.OnClickListe
                 Registration.WebService temp = new Registration.WebService();
                 temp.execute(paramenters);
                 break;
-
             case R.id.loginIn:
                 shouLoginPage();
                 break;
         }
 
+    }
+
+    private void toastMsg(){
+        Toast.makeText(this, "Code is Empty", Toast.LENGTH_SHORT).show();
     }
 
     private void openOverlay() {
@@ -94,15 +101,15 @@ public class Registration extends AppCompatActivity implements View.OnClickListe
                 String[] paramenters = new String[3];
                 paramenters[0] = username.getText().toString();
                 paramenters[1] = textInput;
+                if(paramenters[0].equals("") || paramenters[1].equals("")){
+                    toastMsg();
+                }
                 paramenters[2] = API_Verify;
                 Registration.WebServiceNew temp = new Registration.WebServiceNew();
                 temp.execute(paramenters);
 
-                //dialog.dismiss();
             }
         });
-
-        // Show the dialog
         dialog.show();
     }
 
@@ -124,25 +131,13 @@ public class Registration extends AppCompatActivity implements View.OnClickListe
             JSONObject jsonobj = null;
             try {
                 jsonobj = new JSONObject(result);
-                String toastMsg = "Check Email for confirmation COde";
+                String toastMsg = "Check Email for Confirmation Code";
                 if(jsonobj.getString("message").equals("Success")){
-                    System.out.println("Hi   Success");
                     Toast.makeText(Registration.this, toastMsg, Toast.LENGTH_SHORT).show();
                     openOverlay();
-                    //findViewById(R.id.hidden_layout).setVisibility(View.VISIBLE);
-
                 }else{
-                    String errorData = jsonobj.getString("data");
-                    if (errorData.contains("UsernameExistsException")) {
-                        toastMsg = "User already exists";
-                    } else if (errorData.contains("InvalidPasswordException")) {
-                        toastMsg = "invalid password";
-                    } else {
-                        toastMsg = "Internal Error";
-                    }
-                    Toast.makeText(Registration.this, toastMsg, Toast.LENGTH_SHORT).show();
-                    System.out.println("Please Try again");
-                    //openOverlay();
+                    toastMsg = ApiConnection.sendToastError(jsonobj.getString("data"));
+                    Toast.makeText(getApplicationContext(), toastMsg, Toast.LENGTH_SHORT).show();
                 }
             } catch (JSONException e) {
                 throw new RuntimeException(e);
@@ -163,38 +158,10 @@ public class Registration extends AppCompatActivity implements View.OnClickListe
                 json.put("password",password);
                 json.put("email",email);
                 String jsonstring = json.toString();
-                URL url = new URL(apiUrl);
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.getDoOutput();
-                urlConnection.setRequestMethod("POST");
-                urlConnection.setRequestProperty("Content-Type","application/json");
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(urlConnection.getOutputStream(),"utf-8"));
-                writer.write(jsonstring);
-                writer.flush();
-                writer.close();
-
-                if (urlConnection.getResponseCode() == 200){
-                    BufferedReader bread = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(),"utf-8"));
-                    //bread.readLine();
-                    String temp,responseString = "";
-
-                    while ((temp = bread.readLine()) != null){
-                        responseString+= temp;
-                    }
-                     return responseString;
-
-                }
-
-
+                return ApiConnection.sendRequest(jsonstring, apiUrl);
             } catch (JSONException e) {
                 throw new RuntimeException(e);
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             }
-
-            return null;
         }
     }
 
@@ -212,25 +179,12 @@ public class Registration extends AppCompatActivity implements View.OnClickListe
             try {
                 jsonobj = new JSONObject(result);
                 String toastMsg = "Registered Successful. Login Now";
-
                 if(jsonobj.getString("message").equals("Success")){
-                    System.out.println("Confim   Success");
-                    //openOverlay();
-                    //findViewById(R.id.hidden_layout).setVisibility(View.VISIBLE);
                     Toast.makeText(Registration.this, toastMsg, Toast.LENGTH_SHORT).show();
                     shouLoginPage();
                 }else{
-                    String errorData = jsonobj.getString("data");
-                    if (errorData.contains("UserNotFoundException")) {
-                        toastMsg = "user name not found";
-                    } else if (errorData.contains("CodeMismatchException")) {
-                        toastMsg = "Code doesn't match.";
-                    } else if (errorData.contains("ExpiredCodeException")) {
-                        toastMsg = "Code has expired.";
-                    } else {
-                        toastMsg = "Internal Error";
-                    }
-                    Toast.makeText(Registration.this, toastMsg, Toast.LENGTH_SHORT).show();
+                    toastMsg = ApiConnection.sendToastError(jsonobj.getString("data"));
+                    Toast.makeText(getApplicationContext(), toastMsg, Toast.LENGTH_SHORT).show();
                 }
             } catch (JSONException e) {
                 throw new RuntimeException(e);
@@ -245,42 +199,13 @@ public class Registration extends AppCompatActivity implements View.OnClickListe
                 String username = inputs[0];
                 String code = inputs[1];
                 String apiUrl = inputs[2];
-
                 json.put("username",username);
                 json.put("code",code);
                 String jsonstring = json.toString();
-                URL url = new URL(apiUrl);
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.getDoOutput();
-                urlConnection.setRequestMethod("POST");
-                urlConnection.setRequestProperty("Content-Type","application/json");
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(urlConnection.getOutputStream(),"utf-8"));
-                writer.write(jsonstring);
-                writer.flush();
-                writer.close();
-
-                if (urlConnection.getResponseCode() == 200){
-                    BufferedReader bread = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(),"utf-8"));
-                    //bread.readLine();
-                    String temp,responseString = "";
-
-                    while ((temp = bread.readLine()) != null){
-                        responseString+= temp;
-                    }
-                    return responseString;
-
-                }
-
-
+                return ApiConnection.sendRequest(jsonstring, apiUrl);
             } catch (JSONException e) {
                 throw new RuntimeException(e);
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             }
-
-            return null;
         }
     }
 }
