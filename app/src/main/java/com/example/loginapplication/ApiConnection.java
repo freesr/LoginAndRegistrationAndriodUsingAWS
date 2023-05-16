@@ -37,7 +37,6 @@ public class ApiConnection {
                 responseString += temp;
             }
             return responseString;
-            //JSONObject json = new JSONObject(new JSONTokener(responseString));
 
         }
 

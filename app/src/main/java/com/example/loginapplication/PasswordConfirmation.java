@@ -25,7 +25,7 @@ import java.net.URL;
 
 public class PasswordConfirmation extends AppCompatActivity implements View.OnClickListener {
 
-    private EditText code,username,newpassword;
+    private EditText code,username,newpassword,renewpassword;
     private static final String API_FORGOT_PASSWORD = "https://ia219vugx9.execute-api.us-east-1.amazonaws.com/production/user/confirmforgotpassword";
     private Button restPass;
 
@@ -39,6 +39,7 @@ public class PasswordConfirmation extends AppCompatActivity implements View.OnCl
         newpassword = findViewById(R.id.newpassword);
         username = findViewById(R.id.userName);
         restPass = findViewById(R.id.submit_new_password);
+        renewpassword = findViewById(R.id.reenternewpassword);
         restPass.setOnClickListener(this);
 
     }
@@ -49,9 +50,14 @@ public class PasswordConfirmation extends AppCompatActivity implements View.OnCl
             case R.id.submit_new_password:
                 String username1 = username.getText().toString();
                 String password1 = newpassword.getText().toString();
+                String repassword1 = renewpassword.getText().toString();
                 String email_code = code.getText().toString();
-                if(username1.equals("") ||  password1.equals("") ||  email_code.equals("")){
+                if(username1.equals("") ||  password1.equals("") ||  email_code.equals("") ||  repassword1.equals("")){
                     Toast.makeText(this, "UserName or password or Code is empty", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+                if(!password1.equals(repassword1)){
+                    Toast.makeText(this, "Password Dosn't match", Toast.LENGTH_SHORT).show();
                     break;
                 }
                 String[] paramenters = new String[4];

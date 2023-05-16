@@ -20,7 +20,6 @@
         app:layout_constraintVertical_bias="0.57" />
 
 
-
     <Button
         android:id="@+id/signUp"
         android:layout_width="wrap_content"
@@ -75,19 +74,18 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.445" />
 
+
     <ImageView
         android:id="@+id/textView"
         android:layout_width="1024px"
-        android:src="@drawable/download"
         android:layout_height="236px"
+        android:src="@drawable/download"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.43"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.178" />
-
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
